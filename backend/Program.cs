@@ -9,6 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+// In production, the Angular files will be served from this directory (see: https://stackoverflow.com/a/55989907)
+builder.Services.AddSpaStaticFiles(cfg => cfg.RootPath = "wwwroot/frontend");
+
 // Databases
 builder.Services.AddDbContext<MsnContext>(opt => opt.UseSqlite(
     builder.Configuration.GetConnectionString("prid-tuto-sqlite")
@@ -61,8 +64,14 @@ else
     context?.Database.EnsureDeleted();
 context?.Database.EnsureCreated();
 
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.UseSpaStaticFiles();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseSpa(spa => { });
 
 app.Run();

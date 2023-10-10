@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "publish-prepare",
+            "detail": "Compile le frontend et le backend en vue d'un déploiement",
+            "type": "shell",
+            "command": "bash publish-prepare.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "group": "servers"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "publish-docker-desktop",
+            "detail": "Publie l'application vers Docker Desktop",
+            "type": "shell",
+            "command": "bash publish-docker-desktop.sh",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": "build",
+            "presentation": {
+                "group": "servers"
+            },
+            "problemMatcher": "$msCompile"
+        }        
+    ]
+}
