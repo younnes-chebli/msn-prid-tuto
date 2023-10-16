@@ -7,9 +7,8 @@ export class Member {
     fullName?: string;
     @Type(() => Date)
     birthDate?: Date;
-}
 
-/*     get display(): string {
+    get display(): string {
         return `${this.pseudo} (${this.birthDate ? this.age + ' years old' : 'age unknown'})`;
     }
 
@@ -22,4 +21,4 @@ export class Member {
         if (this.birthDate > today) age--;
         return age;
     }
- */
+}
