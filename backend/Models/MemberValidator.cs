@@ -1,5 +1,6 @@
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using prid_tuto.Helpers;
 
 namespace prid_tuto.Models;
 
@@ -33,16 +34,31 @@ public class MemberValidator : AbstractValidator<Member>
             .OverridePropertyName(nameof(Member.FullName))
             .WithMessage("'{PropertyName}' must be unique.");
 
+        RuleFor(m => m.Role)
+        .IsInEnum();
+
         // Validations spécifiques pour la création
         RuleSet("create", () => {
             RuleFor(m => m.Pseudo)
                 .MustAsync(BeUniquePseudo)
                 .WithMessage("'{PropertyName}' must be unique.");
         });
+
+        // Validations spécifiques pour l'authentification
+        RuleSet("authenticate", () => {
+            RuleFor(m => m.Token)
+                .NotNull().OverridePropertyName("Password").WithMessage("Incorrect password.");
+        });
     }
 
     public async Task<FluentValidation.Results.ValidationResult> ValidateOnCreate(Member member) {
         return await this.ValidateAsync(member, o => o.IncludeRuleSets("default", "create"));
+    }
+
+    public async Task<FluentValidation.Results.ValidationResult> ValidateForAuthenticate(Member? member) {
+        if (member == null)
+            return ValidatorHelper.CustomError("Member not found.", "Pseudo");
+        return await this.ValidateAsync(member!, o => o.IncludeRuleSets("authenticate"));
     }
 
     private async Task<bool> BeUniqueFullName(string pseudo, string? fullName, CancellationToken token) {

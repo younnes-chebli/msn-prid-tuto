@@ -14,6 +14,7 @@ public class MsnContext : DbContext
         modelBuilder.Entity<Member>().HasIndex(m => m.FullName).IsUnique();
 
         modelBuilder.Entity<Member>().HasData(
+            new Member { Pseudo = "admin", Password = "admin", FullName = "Admin", Role = Role.Admin },
             new Member { Pseudo = "ben", Password = "ben", FullName = "Benoît Penelle", BirthDate = new DateTime(1970, 1, 2) },
             new Member { Pseudo = "bruno", Password = "bruno", FullName = "Bruno Lacroix", BirthDate = new DateTime(1971, 2, 3) },
             new Member { Pseudo = "alain", Password = "alain", FullName = "Alain Silovy" },

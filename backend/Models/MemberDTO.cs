@@ -5,6 +5,8 @@ public class MemberDTO
     public string Pseudo { get; set; } = "";
     public string? FullName { get; set; }
     public DateTimeOffset? BirthDate { get; set; }
+    public Role Role { get; set; }
+    public string? Token { get; set; }
 }
 
 public class MemberWithPasswordDTO : MemberDTO

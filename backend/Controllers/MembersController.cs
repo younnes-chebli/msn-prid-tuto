@@ -2,9 +2,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using prid_tuto.Models;
 using AutoMapper;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using prid_tuto.Helpers;
 
 namespace prid_tuto.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class MembersController : ControllerBase
@@ -22,7 +29,47 @@ public class MembersController : ControllerBase
         _mapper = mapper;
     }
 
+    [AllowAnonymous]
+    [HttpPost("authenticate")]
+    public async Task<ActionResult<MemberDTO>> Authenticate(MemberWithPasswordDTO dto) {
+        var member = await Authenticate(dto.Pseudo, dto.Password);
+
+        var result = await new MemberValidator(_context).ValidateForAuthenticate(member);
+        if (!result.IsValid)
+            return BadRequest(result);
+
+        return Ok(_mapper.Map<MemberDTO>(member));
+    }
+
+    private async Task<Member?> Authenticate(string pseudo, string password) {
+        var member = await _context.Members.FindAsync(pseudo);
+
+        // return null if member not found
+        if (member == null)
+            return null;
+
+        if (member.Password == password) {
+            // authentication successful so generate jwt token
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes("my-super-secret-key");
+            var tokenDescriptor = new SecurityTokenDescriptor {
+                Subject = new ClaimsIdentity(new Claim[] {
+                    new Claim(ClaimTypes.Name, member.Pseudo),
+                    new Claim(ClaimTypes.Role, member.Role.ToString())
+                }),
+                IssuedAt = DateTime.UtcNow,
+                Expires = DateTime.UtcNow.AddMinutes(10),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            member.Token = tokenHandler.WriteToken(token);
+        }
+
+        return member;
+    }
+
     // GET: api/Members
+    [Authorized(Role.Admin)]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetAll() {
         /*
@@ -68,6 +115,7 @@ public class MembersController : ControllerBase
         return CreatedAtAction(nameof(GetOne), new { pseudo = member.Pseudo }, _mapper.Map<MemberDTO>(newMember));
     }
 
+    [Authorized(Role.Admin)]
     [HttpPut]
     public async Task<IActionResult> PutMember(MemberDTO dto) {
         // Récupère en BD le membre à mettre à jour
@@ -87,6 +135,7 @@ public class MembersController : ControllerBase
         return NoContent();
     }
 
+    [Authorized(Role.Admin)]
     [HttpDelete("{pseudo}")]
     public async Task<IActionResult> DeleteMember(string pseudo) {
         // Récupère en BD le membre à supprimer
