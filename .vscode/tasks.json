@@ -1,15 +1,23 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "publish-prepare",
-            "detail": "Compile le frontend et le backend en vue d'un déploiement",
+            "label": "run-servers",
+            "detail": "Démarre le frontend et le backend",
+            "group": "build",
+            "dependsOn": [
+                "run-angular",
+                "run-dotnet"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "run-angular",
+            "detail": "Démarre le frontend",
             "type": "shell",
-            "command": "bash publish-prepare.sh",
+            "command": "npm start",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/frontend"
             },
             "group": "build",
             "presentation": {
@@ -18,18 +26,18 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "label": "publish-docker-desktop",
-            "detail": "Publie l'application vers Docker Desktop",
+            "label": "run-dotnet",
+            "detail": "Démarre le backend",
             "type": "shell",
-            "command": "bash publish-docker-desktop.sh",
+            "command": "dotnet watch",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/backend"
             },
             "group": "build",
             "presentation": {
                 "group": "servers"
             },
             "problemMatcher": "$msCompile"
-        }        
-    ]
+        }
+   ]
 }
