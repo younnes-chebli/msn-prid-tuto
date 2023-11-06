@@ -1,0 +1,11 @@
+<div>
+    <!-- le champ d'encodage ; activé ssi on est en mode d'édition ; bind bidirectionnel sur la valeur interne -->
+    <input type="number" maxlength="5" size="5" [(ngModel)]="internalNumber.value" [disabled]="!editMode">
+    <!-- le bouton Edit permet de passer en mode d'édition ; caché ssi on est en mode d'édition -->
+    <button (click)="edit()" [hidden]="editMode">Edit</button>
+    <!-- le bouton Save permet de sauver la valeur éditée ; caché ssi on n'est pas en mode d'édition ; désactivé ssi valeur inchangée -->
+    <button (click)="save()" [hidden]="!editMode" [disabled]="internalNumber.value == number.value">Save</button>
+    <!-- le bouton Cancel permet d'annuler les changements et revenir à la valeur précédent l'édition ;
+        caché ssi on n'est pas en mode d'édition ; désactivé ssi valeur inchangée -->
+    <button (click)="cancel()" [hidden]="!editMode" [disabled]="internalNumber.value == number.value">Cancel</button>
+</div>

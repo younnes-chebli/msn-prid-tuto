@@ -16,6 +16,9 @@ import { RestrictedComponent } from '../components/restricted/restricted.compone
 import { UnknownComponent } from '../components/unknown/unknown.component';
 import { JwtInterceptor } from '../interceptors/jwt.interceptor';
 import { LoginComponent } from '../components/login/login.component';
+import { EditNumberComponent } from '../components/number/edit-number.component';
+import { NumberGroupComponent } from '../components/number/number-group.component';
+import { NumbersContainerComponent } from '../components/number/numbers-container.component';
 
 @NgModule({
   declarations: [
@@ -29,7 +32,10 @@ import { LoginComponent } from '../components/login/login.component';
     MemberListComponent,
     LoginComponent,
     UnknownComponent,
-    RestrictedComponent
+    RestrictedComponent,
+    EditNumberComponent,
+    NumberGroupComponent,
+    NumbersContainerComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

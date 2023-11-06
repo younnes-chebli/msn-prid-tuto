@@ -1,0 +1,10 @@
+<fieldset class="border p-2">
+    <legend class="w-auto px-2 my-0" style="width: auto !important">{{group.title}}</legend>
+    <p><label><b>Total = {{group.total}}</b>&nbsp;&nbsp;({{countChanges}} changes)</label></p>
+    <ng-container>
+        <edit-number *ngFor="let number of group.numbers" [number]="number" (numberChange)="numberChanged($event)">
+        </edit-number>
+    </ng-container>
+    <a href="javascript:void(0)" (click)="duplicate()">duplicate</a>&nbsp;&nbsp;&nbsp;
+    <a href="javascript:void(0)" (click)="delete()">delete</a>&nbsp;&nbsp;&nbsp;
+</fieldset>
