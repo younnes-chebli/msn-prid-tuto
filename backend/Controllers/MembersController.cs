@@ -117,14 +117,17 @@ public class MembersController : ControllerBase
 
     [Authorized(Role.Admin)]
     [HttpPut]
-    public async Task<IActionResult> PutMember(MemberDTO dto) {
+    public async Task<IActionResult> PutMember(MemberWithPasswordDTO dto) {
         // Récupère en BD le membre à mettre à jour
         var member = await _context.Members.FindAsync(dto.Pseudo);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (member == null)
             return NotFound();
+        // S'il n'y a pas de mot de passe dans le dto, on garde le mot de passe actuel
+        if (string.IsNullOrEmpty(dto.Password))
+            dto.Password = member.Password;
         // Mappe les données reçues sur celles du membre en question
-        _mapper.Map<MemberDTO, Member>(dto, member);
+        _mapper.Map<MemberWithPasswordDTO, Member>(dto, member);
         // Valide les données
         var result = await new MemberValidator(_context).ValidateAsync(member);
         if (!result.IsValid)
