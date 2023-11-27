@@ -7,6 +7,8 @@ public class MemberDTO
     public DateTimeOffset? BirthDate { get; set; }
     public Role Role { get; set; }
     public string? Token { get; set; }
+
+    public ICollection<PhoneDTO> Phones { get; set; } = new HashSet<PhoneDTO>();
 }
 
 public class MemberWithPasswordDTO : MemberDTO

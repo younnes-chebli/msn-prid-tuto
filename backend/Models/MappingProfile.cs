@@ -22,5 +22,8 @@ public class MappingProfile : Profile
 
         CreateMap<Member, MemberWithPasswordDTO>();
         CreateMap<MemberWithPasswordDTO, Member>();
+
+        CreateMap<Phone, PhoneDTO>();
+        CreateMap<PhoneDTO, Phone>();
     }
 }

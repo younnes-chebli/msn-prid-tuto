@@ -22,7 +22,13 @@ public class MsnContext : DbContext
             new Member { Pseudo = "boris", Password = "boris", FullName = "Boris Verhaegen" },
             new Member { Pseudo = "marc", Password = "marc", FullName = "Marc Michel" }
         );
+
+        modelBuilder.Entity<Phone>().HasData(
+            new Phone { PhoneId = 1, Type = "aaa", Number = "123", MemberPseudo = "ben" },
+            new Phone { PhoneId = 2, Type = "bbb", Number = "456", MemberPseudo = "ben" }
+        );
     }
 
     public DbSet<Member> Members => Set<Member>();
+    public DbSet<Phone> Phones => Set<Phone>();
 }

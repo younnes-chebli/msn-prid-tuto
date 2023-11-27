@@ -81,14 +81,15 @@ public class MembersController : ControllerBase
         */
 
         // Récupère une liste de tous les membres et utilise le mapper pour les transformer en leur DTO
-        return _mapper.Map<List<MemberDTO>>(await _context.Members.ToListAsync());
+        return _mapper.Map<List<MemberDTO>>(await _context.Members.Include(m => m.Phones).ToListAsync());
+
     }
 
     // GET: api/Members/ben
     [HttpGet("{pseudo}")]
     public async Task<ActionResult<MemberDTO>> GetOne(string pseudo) {
         // Récupère en BD le membre dont le pseudo est passé en paramètre dans l'url
-        var member = await _context.Members.FindAsync(pseudo);
+        var member = await _context.Members.Include(m => m.Phones).SingleOrDefaultAsync(m => m.Pseudo == pseudo);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (member == null)
             return NotFound();
@@ -119,7 +120,7 @@ public class MembersController : ControllerBase
     [HttpPut]
     public async Task<IActionResult> PutMember(MemberWithPasswordDTO dto) {
         // Récupère en BD le membre à mettre à jour
-        var member = await _context.Members.FindAsync(dto.Pseudo);
+        var member = await _context.Members.Include(m => m.Phones).SingleOrDefaultAsync(m => m.Pseudo == dto.Pseudo);
         // Si aucun membre n'a été trouvé, renvoyer une erreur 404 Not Found
         if (member == null)
             return NotFound();

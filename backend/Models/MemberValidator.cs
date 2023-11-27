@@ -37,6 +37,17 @@ public class MemberValidator : AbstractValidator<Member>
         RuleFor(m => m.Role)
         .IsInEnum();
 
+        RuleFor(m => m.Phones.Count)
+            .LessThanOrEqualTo(3);
+
+        RuleFor(m => m.Phones.Select(p => p.Number))
+            .Must(phones => phones.Distinct().Count() == phones.Count())
+            .WithMessage("Phone number must be unique for one member.");
+
+        RuleForEach(m => m.Phones)
+            .SetValidator(new PhoneValidator(_context));
+
+
         // Validations spécifiques pour la création
         RuleSet("create", () => {
             RuleFor(m => m.Pseudo)

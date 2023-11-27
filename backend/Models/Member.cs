@@ -30,4 +30,7 @@ public class Member
 
     [NotMapped]
     public string? Token { get; set; }
+
+    public ICollection<Phone> Phones { get; set; } = new HashSet<Phone>();
+
 }
