@@ -8,6 +8,12 @@ export enum Role {
     Admin = 2
 }
 
+export class Phone {
+    phoneId?: number;
+    type?: string;
+    number?: string;
+}
+
 export class Member {
     pseudo?: string;
     password?: string;
@@ -16,6 +22,7 @@ export class Member {
     birthDate?: Date;
     role: Role = Role.Member;
     token?: string;
+    phones: Phone[] = [];
 
     public get roleAsString(): string {
         return Role[this.role];

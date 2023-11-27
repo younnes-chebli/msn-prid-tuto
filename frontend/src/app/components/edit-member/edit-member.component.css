@@ -11,6 +11,24 @@
     font-size: xx-large;
 }
 
+.phone-container {
+    margin-top: 15px;
+    display: inline-grid;
+    grid-column-gap: 5px;
+    grid-template-columns: 200px 200px auto;
+    grid-auto-flow: row;
+    align-items: center;
+}
+
+.phone-container>* {
+    word-wrap: break-word;
+    /* Forcer le wrap même sans espaces */
+}
+
+.phone-header {
+    font-weight: bold;
+}
+
 .add {
     height: 40px;
 }

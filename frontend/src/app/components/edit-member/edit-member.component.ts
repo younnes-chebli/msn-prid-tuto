@@ -7,8 +7,9 @@ import { FormControl } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import * as _ from 'lodash-es';
-import { Member, Role } from 'src/app/models/member';
+import { Member, Phone, Role } from 'src/app/models/member';
 import { differenceInCalendarYears, differenceInYears, sub } from 'date-fns';
+import { plainToInstance } from 'class-transformer';
 
 @Component({
     selector: 'app-edit-member-mat',
@@ -17,13 +18,17 @@ import { differenceInCalendarYears, differenceInYears, sub } from 'date-fns';
 })
 export class EditMemberComponent {
     public frm!: FormGroup;
+    public frmPhone!: FormGroup;
     public ctlPseudo!: FormControl;
     public ctlFullName!: FormControl;
     public ctlPassword!: FormControl;
     public ctlBirthDate!: FormControl;
     public ctlRole!: FormControl;
+    public ctlPhoneType!: FormControl;
+    public ctlPhoneNumber!: FormControl;
     public isNew: boolean;
     public maxDate = sub(new Date(), { years: 18 });
+    public phones!: Phone[];
 
     constructor(public dialogRef: MatDialogRef<EditMemberComponent>,
         @Inject(MAT_DIALOG_DATA) public data: { member: Member; isNew: boolean; },
@@ -39,6 +44,7 @@ export class EditMemberComponent {
         this.ctlFullName = this.fb.control(null, [Validators.minLength(3)]);
         this.ctlBirthDate = this.fb.control(null, [this.validateBirthDate()]);
         this.ctlRole = this.fb.control(Role.Member, []);
+
         this.frm = this.fb.group({
             pseudo: this.ctlPseudo,
             password: this.ctlPassword,
@@ -47,8 +53,16 @@ export class EditMemberComponent {
             role: this.ctlRole
         });
 
+        this.ctlPhoneType = this.fb.control('', [Validators.minLength(3)]);
+        this.ctlPhoneNumber = this.fb.control('', [this.phoneNumberUnique(), Validators.minLength(3)]);
+        this.frmPhone = this.fb.group({
+            type: this.ctlPhoneType,
+            number: this.ctlPhoneNumber
+        });
+
         this.isNew = data.isNew;
         this.frm.patchValue(data.member);
+        this.phones = plainToInstance(Phone, data.member.phones);
     }
 
     // Validateur bidon qui vérifie que la valeur est différente
@@ -58,6 +72,12 @@ export class EditMemberComponent {
                 return { forbiddenValue: { currentValue: ctl.value, forbiddenValue: val } };
             }
             return null;
+        };
+    }
+
+    phoneNumberUnique(): any {
+        return (ctl: FormControl) => {
+            return this.phones?.length < 3 && this.phones?.find(p => p.number == ctl.value) ? { phoneNumberUnique: true } : null;
         };
     }
 
@@ -99,10 +119,26 @@ export class EditMemberComponent {
     }
 
     update() {
-        this.dialogRef.close(this.frm.value);
+        const data = this.frm.value;
+        data.phones = this.phones;
+        this.dialogRef.close(data);
     }
 
     cancel() {
         this.dialogRef.close();
+    }
+
+    phoneAdd() {
+        if (!this.phones) {
+            this.phones = [];
+        }
+        this.phones.push(this.frmPhone.value);
+        this.frmPhone.reset();
+        this.frm.markAsDirty();
+    }
+
+    phoneDelete(phone: Phone) {
+        _.remove(this.phones, phone);
+        this.frm.markAsDirty();
     }
 }
