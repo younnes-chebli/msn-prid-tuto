@@ -25,6 +25,7 @@ import { EditMemberComponent } from '../components/edit-member/edit-member.compo
 import { SharedModule } from './shared.module';
 import { MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { fr } from 'date-fns/locale';
+import { RelationshipsComponent } from '../components/relationships/relationships.component';
 
 
 @NgModule({
@@ -44,7 +45,8 @@ import { fr } from 'date-fns/locale';
     NumberGroupComponent,
     NumbersContainerComponent,
     SetFocusDirective,
-    EditMemberComponent
+    EditMemberComponent,
+    RelationshipsComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

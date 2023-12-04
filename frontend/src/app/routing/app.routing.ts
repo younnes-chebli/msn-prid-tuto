@@ -11,6 +11,7 @@ import { UnknownComponent } from '../components/unknown/unknown.component';
 import { AuthGuard } from '../services/auth.guard';
 import { Role } from '../models/member';
 import { NumbersContainerComponent } from '../components/number/numbers-container.component';
+import { RelationshipsComponent } from '../components/relationships/relationships.component';
 
 const appRoutes: Routes = [
     { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -22,6 +23,11 @@ const appRoutes: Routes = [
         component: MemberListComponent,
         canActivate: [AuthGuard],
         data: { roles: [Role.Admin] }
+    },
+    {
+        path: 'friends',
+        component: RelationshipsComponent,
+        canActivate: [AuthGuard]
     },
     {
         path: 'login',

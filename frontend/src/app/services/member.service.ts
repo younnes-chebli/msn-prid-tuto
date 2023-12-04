@@ -5,6 +5,7 @@ import { Member } from '../models/member';
 import { catchError, map } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
+import { Friend } from '../models/friend';
 
 @Injectable({ providedIn: 'root' })
 export class MemberService {
@@ -45,6 +46,36 @@ export class MemberService {
 
     public add(m: Member): Observable<boolean> {
         return this.http.post<Member>(`${this.baseUrl}api/members`, m).pipe(
+            map(res => true),
+            catchError(err => {
+                console.error(err);
+                return of(false);
+            })
+        );
+    }
+
+    public getMembersWithRelationship(): Observable<Friend[]> {
+        return this.http.get<any[]>(`${this.baseUrl}api/members/rels`).pipe(
+            map(res => plainToInstance(Friend, res)),
+            catchError(err => {
+                console.error(err);
+                return of([]);
+            })
+        );
+    }
+
+    public follow(followee: string): Observable<boolean> {
+        return this.http.post(`${this.baseUrl}api/members/follow/${followee}`, null).pipe(
+            map(res => true),
+            catchError(err => {
+                console.error(err);
+                return of(false);
+            })
+        );
+    }
+
+    public unfollow(followee: string) {
+        return this.http.post(`${this.baseUrl}api/members/unfollow/${followee}`, null).pipe(
             map(res => true),
             catchError(err => {
                 console.error(err);
