@@ -154,4 +154,46 @@ public class MembersController : ControllerBase
         // Retourne un statut 204 avec une réponse vide
         return NoContent();
     }
+
+    private async Task<Member?> GetLoggedMember() => await _context.Members.FindAsync(User!.Identity!.Name);
+
+    [HttpGet("rels")]
+    public async Task<ActionResult<IEnumerable<FriendDTO>>> GetMembersWithRelationship() {
+        var pseudo = User.Identity?.Name;
+        var friends = from m in _context.Members
+                      let isFollower = m.Followees.Any(f => f.Pseudo == pseudo)
+                      let isFollowee = m.Followers.Any(f => f.Pseudo == pseudo)
+                      let isMutual = isFollower && isFollowee
+                      let isSelf = m.Pseudo == pseudo
+                      let rel = isSelf ? "self" : isMutual ? "mutual" : isFollower ? "follower" : isFollowee ? "followee" : "none"
+                      orderby m.Pseudo
+                      select new FriendDTO {
+                          Pseudo = m.Pseudo,
+                          FullName = m.FullName!,
+                          Relationship = rel
+                      };
+        return await friends.ToListAsync();
+    }
+
+    [HttpPost("follow/{pseudo}")]
+    public async Task<IActionResult> Follow(string pseudo) {
+        var follower = (await GetLoggedMember())!;
+        var followee = await _context.Members.FindAsync(pseudo);
+        if (followee == null)
+            return NotFound();
+        if (!await follower.Follow(followee))
+            return BadRequest();
+        return Ok();
+    }
+
+    [HttpPost("unfollow/{pseudo}")]
+    public async Task<IActionResult> UnFollow(string pseudo) {
+        var follower = (await GetLoggedMember())!;
+        var followee = await _context.Members.FindAsync(pseudo);
+        if (followee == null)
+            return NotFound();
+        if (!await follower.UnFollow(followee))
+            return BadRequest();
+        return Ok();
+    }
 }

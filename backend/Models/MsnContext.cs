@@ -8,8 +8,23 @@ public class MsnContext : DbContext
         : base(options) {
     }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+        base.OnConfiguring(optionsBuilder);
+        optionsBuilder
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Member>()
+            .HasMany(left => left.Followers)
+            .WithMany(right => right.Followees)
+            .UsingEntity<Follow>(
+                right => right.HasOne(m => m.Follower).WithMany(),
+                left => left.HasOne(m => m.Followee).WithMany()
+            );
 
         modelBuilder.Entity<Member>().HasIndex(m => m.FullName).IsUnique();
 
@@ -27,8 +42,17 @@ public class MsnContext : DbContext
             new Phone { PhoneId = 1, Type = "aaa", Number = "123", MemberPseudo = "ben" },
             new Phone { PhoneId = 2, Type = "bbb", Number = "456", MemberPseudo = "ben" }
         );
+
+        modelBuilder.Entity<Follow>().HasData(
+            new Follow { FollowerPseudo = "ben", FolloweePseudo = "bruno" },
+            new Follow { FollowerPseudo = "ben", FolloweePseudo = "alain" },
+            new Follow { FollowerPseudo = "bruno", FolloweePseudo = "boris" },
+            new Follow { FollowerPseudo = "bruno", FolloweePseudo = "ben" },
+            new Follow { FollowerPseudo = "bruno", FolloweePseudo = "xavier" }
+        );
     }
 
     public DbSet<Member> Members => Set<Member>();
     public DbSet<Phone> Phones => Set<Phone>();
+    public DbSet<Follow> Follows => Set<Follow>();
 }
